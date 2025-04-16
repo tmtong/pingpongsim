@@ -182,7 +182,7 @@ def generate_plot(rubber_name, impact_height, angles):
 
     # Save figure
     filename = f"trajectories_{rubber_name.replace(' ', '_')}_{int(impact_height*100)}cm.png"
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.savefig('results/' + filename, dpi=300, bbox_inches='tight')
     plt.close()
     return filename
 
@@ -193,7 +193,6 @@ def generate_all_plots():
     sample_heights = [0.10, 0.20, 0.30]
     sample_angles = [20, 30, 40, 50, 60, 70, 80]
 
-    os.makedirs("trajectory_plots", exist_ok=True)
     for rubber_name in sample_rubbers:
         for height in sample_heights:
             try:
@@ -208,7 +207,7 @@ def generate_all_plots():
                 print(f"Error generating trajectories for {rubber_name}, height: {height*100}cm: {e}")
 
     # Generate HTML file
-    with open('all_trajectories.html', 'w') as f:
+    with open('./results/all_trajectories.html', 'w') as f:
         f.write("<html><body>\n")
         f.write("<h1>Table Tennis Ball Trajectories</h1>\n")
         for result in results:
