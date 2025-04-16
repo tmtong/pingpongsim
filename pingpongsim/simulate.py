@@ -214,5 +214,9 @@ def generate_all_plots():
             f.write(f"<h2>{result['rubber']}, Height: {result['height_cm']}cm</h2>\n")
             f.write(f'<img src="{result["filepath"]}" alt="Trajectories">\n')
         f.write("</body></html>")
+    with open('./results/all_trajectories.md', 'w') as f:
+        for result in results:
+
+            f.write('![alt text](result["' + filepath + '"] "' + result['rubber'] + ' at ' + str(result['height_cm']) + '")\n')
 
 generate_all_plots()
