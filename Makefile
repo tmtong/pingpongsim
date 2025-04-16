@@ -1,4 +1,6 @@
-
+req:
+	mkdir -p results
+	pip install -r requirements.txt
 
 gitrcommit:
 	rm -rf .git/hooks/pre-push .git/hooks/post-push
