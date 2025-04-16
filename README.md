@@ -36,13 +36,12 @@ r: Radius of the ball (0.02 m)
 omega: Angular velocity (spin rate)
 ```
 
-Acceleration Components
+### Acceleration Components
 The acceleration components in the x and z directions are computed as:
 ```
 a_x = -(F_drag / m) * (v_x / v)
 a_z = -g - (F_drag / m) * (v_z / v) - sign(omega) * (F_Magnus / m)
 ```
-These equations are solved numerically using the 4th-order Runge-Kutta method to simulate the ball's trajectory.
 
 ## Impact Model
 When the ball hits the racket, its post-impact velocities and spin are calculated based on the rubber's properties and the incoming ball's state. The key parameters include:
