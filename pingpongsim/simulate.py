@@ -32,12 +32,16 @@ incoming_spin = 1800*2*np.pi/60  # 1800 rpm backspin
 racket_speed = 7.0    # m/s (25.2 km/h)
 
 # Realistic Rubber Properties
+# Realistic Rubber Properties (Updated with new rubbers)
 rubbers = {
     "Tenergy 05 FX": {"mu": 0.75, "e": 0.72, "kv_x": 0.55, "kv_z": 0.48, "kw": 0.65},
     "Tenergy 05": {"mu": 0.78, "e": 0.75, "kv_x": 0.62, "kv_z": 0.55, "kw": 0.72},
+    "Tenergy 05 Hard": {"mu": 0.80, "e": 0.76, "kv_x": 0.64, "kv_z": 0.56, "kw": 0.74},  
+    "Tenergy 19": {"mu": 0.77, "e": 0.74, "kv_x": 0.60, "kv_z": 0.52, "kw": 0.70},
+    "Dignics 09C": {"mu": 0.85, "e": 0.80, "kv_x": 0.70, "kv_z": 0.65, "kw": 0.82},
     "Dignics 05": {"mu": 0.82, "e": 0.78, "kv_x": 0.68, "kv_z": 0.60, "kw": 0.78},
     "Dignics 80": {"mu": 0.80, "e": 0.77, "kv_x": 0.65, "kv_z": 0.58, "kw": 0.75},
-    "Dignics 09C": {"mu": 0.85, "e": 0.80, "kv_x": 0.70, "kv_z": 0.65, "kw": 0.82}
+    "Dignics 64": {"mu": 0.83, "e": 0.79, "kv_x": 0.69, "kv_z": 0.62, "kw": 0.80},      
 }
 
 # Improved bounce parameters (Adjusted for realism)
