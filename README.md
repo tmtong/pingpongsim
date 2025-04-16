@@ -28,17 +28,20 @@ v: Ball velocity
 ```
 ### Magnus Force
 The Magnus force arises due to spin and creates lift perpendicular to the ball's motion:
+```
 F_Magnus = (1/2) * rho * A * C_L * r * |omega| * v
 Where:
-
 C_L: Lift coefficient (0.40, adjusted for topspin shots )
 r: Radius of the ball (0.02 m)
 omega: Angular velocity (spin rate)
+```
+
 Acceleration Components
 The acceleration components in the x and z directions are computed as:
-
+```
 a_x = -(F_drag / m) * (v_x / v)
 a_z = -g - (F_drag / m) * (v_z / v) - sign(omega) * (F_Magnus / m)
+```
 These equations are solved numerically using the 4th-order Runge-Kutta method to simulate the ball's trajectory.
 
 ## Impact Model
@@ -48,19 +51,19 @@ Coefficient of restitution (e) : Determines how much kinetic energy is retained 
 Friction coefficient (mu) : Governs tangential velocity changes and spin generation.
 Spin transfer coefficients (k_w) : Control how much spin is imparted to the ball.
 The post-impact velocities and spin are computed as:
-
+```
 v_out_x = e_n * v_in_x + k_v * v_racket_x + 0.07 * omega_out * r
 v_out_z = e_n * v_in_z + k_z * v_racket_z
 omega_out = mu * omega_in + k_w * (v_rel_tangential / r) + 0.1 * (v_rel_normal / r)
+```
 ## Bounce Model
 After hitting the table, the ball's velocities and spin are updated using a physics-based bounce model. The vertical velocity is reduced by the coefficient of restitution (e_table), while the horizontal velocity and spin are affected by friction and spin transfer:
-
+```
 v_z_post = -e_table * v_z_pre
 delta_v_x = (5/7) * mu_bounce * r * omega
 v_x_post = mu_bounce * v_x_pre + delta_v_x
 omega_post = spin_transfer * omega_pre - (5 / (2 * r)) * (v_x_pre - delta_v_x)
-Rubber Properties
-
+```
 ## Rubber Properties
 The coefficients for different rubbers were determined based on experimental data and manufacturers specifications. These coefficients include:
 - **Friction coefficient ($\mu$)**: Represents the grip of the rubber and its ability to generate spin.
