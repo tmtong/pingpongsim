@@ -47,14 +47,14 @@ These equations are solved numerically using the 4th-order Runge-Kutta method to
 ## Impact Model
 When the ball hits the racket, its post-impact velocities and spin are calculated based on the rubber's properties and the incoming ball's state. The key parameters include:
 
-Coefficient of restitution (e) : Determines how much kinetic energy is retained after impact.
-Friction coefficient (mu) : Governs tangential velocity changes and spin generation.
-Spin transfer coefficients (k_w) : Control how much spin is imparted to the ball.
-The post-impact velocities and spin are computed as:
 ```
 v_out_x = e_n * v_in_x + k_v * v_racket_x + 0.07 * omega_out * r
 v_out_z = e_n * v_in_z + k_z * v_racket_z
 omega_out = mu * omega_in + k_w * (v_rel_tangential / r) + 0.1 * (v_rel_normal / r)
+Coefficient of restitution (e) : Determines how much kinetic energy is retained after impact.
+Friction coefficient (mu) : Governs tangential velocity changes and spin generation.
+Spin transfer coefficients (k_w) : Control how much spin is imparted to the ball.
+The post-impact velocities and spin are computed as:
 ```
 ## Bounce Model
 After hitting the table, the ball's velocities and spin are updated using a physics-based bounce model. The vertical velocity is reduced by the coefficient of restitution (e_table), while the horizontal velocity and spin are affected by friction and spin transfer:
