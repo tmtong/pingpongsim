@@ -17,13 +17,15 @@ The motion of the ball is governed by Newton's second law, incorporating forces 
 
 ### Drag Force
 The drag force opposes the ball's motion and depends on its velocity:
+
+```
 F_drag = (1/2) * rho * A * C_D * v^2
 Where:
 rho: Air density (1.225 kg/m³)
 A: Cross-sectional area of the ball (pi * r^2)
 C_D: Drag coefficient (0.47, adjusted for a table tennis ball)
 v: Ball velocity
-
+```
 ### Magnus Force
 The Magnus force arises due to spin and creates lift perpendicular to the ball's motion:
 F_Magnus = (1/2) * rho * A * C_L * r * |omega| * v
