@@ -217,6 +217,6 @@ def generate_all_plots():
     with open('./results/all_trajectories.md', 'w') as f:
         for result in results:
 
-            f.write('![alt text](result["' + filepath + '"] "' + result['rubber'] + ' at ' + str(result['height_cm']) + '")\n')
+            f.write('![alt text](' + result["filepath"] + ' ' + result['rubber'] + ' at height ' + str(result['height_cm']) + '")\n')
 
 generate_all_plots()
