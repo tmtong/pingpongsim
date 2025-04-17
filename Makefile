@@ -10,7 +10,7 @@ gitrcommit:
 	git config --global credential.helper store
 	# git add -u
 	git add Makefile README.md
-	-git add pingpongsim/*.py tests/*.py
+	-git add pingpongsim/*.py results/*.py
 	-git commit -a -m "`date`"
 	git pull --no-rebase
 	git push origin HEAD
