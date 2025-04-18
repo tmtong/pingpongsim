@@ -7,12 +7,14 @@ import os
 
 
 
+
+
 # Physical Constants
 g = 9.81       # Gravitational acceleration (m/s²)
 m = 0.0027     # Ball mass (kg)
 r = 0.02       # Ball radius (m)
 rho = 1.225    # Air density (kg/m³)
-A = np.pi*r**2 # Cross-sectional area (m²)
+A = np.pi * r**2  # Cross-sectional area (m²)
 C_D = 0.47     # Drag coefficient
 C_L = 0.18     # Lift coefficient (adjusted down)
 
@@ -20,19 +22,18 @@ C_L = 0.18     # Lift coefficient (adjusted down)
 table_length = 2.74
 table_height = 0.76
 net_height = 0.1525
-half_table = table_length/2
+half_table = table_length / 2
 total_net_height = table_height + net_height
 
 # Simulation Parameters
 x0 = -2.37            # Starting position (m)
 impact_heights = [0.15, 0.20, 0.25]  # Realistic impact heights (m)
 incoming_speed = 7.5  # m/s (27 km/h)
-incoming_angle = -4.0*np.pi/180  # Slight downward angle
-incoming_spin = 1800*2*np.pi/60  # 1800 rpm backspin
+incoming_angle = -4.0 * np.pi / 180  # Slight downward angle
+incoming_spin = 1800 * 2 * np.pi / 60  # 1800 rpm 
 racket_speed = 7.0    # m/s (25.2 km/h)
 
-# Realistic Rubber Properties
-# Realistic Rubber Properties (Updated with new rubbers)
+
 rubbers = {
     "Hurricane 3 Neo": {"mu": 0.90, "e": 0.76, "kv_x": 0.65, "kv_z": 0.58, "kw": 0.85},
     "Tenergy 05 FX": {"mu": 0.75, "e": 0.72, "kv_x": 0.55, "kv_z": 0.48, "kw": 0.65},
@@ -46,11 +47,13 @@ rubbers = {
 
 }
 
-# Improved bounce parameters (Adjusted for realism)
-e_table = 0.70  # Vertical Coefficient of Restitution (adjusted)
-mu_bounce = 0.80  # Horizontal friction coefficient (adjusted)
-spin_transfer = 0.55  # Adjusted spin retention after bounce
+# Improved bounce parameters for intermediate play
+e_table = 0.70        # Vertical Coefficient of Restitution
+mu_bounce = 0.80      # Horizontal friction coefficient
+spin_transfer = 0.55  # Spin retention after bounce
 I = (2 / 5) * m * r**2  # Moment of inertia for solid sphere
+
+
 
 def calculate_post_impact(rubber, impact_height, swing_angle):
     """Improved impact model with rotational energy consideration."""
@@ -150,7 +153,7 @@ def generate_plot(rubber_name, impact_height, angles):
     ax.plot([-half_table, half_table], [table_height, table_height], 'k-', linewidth=2, label="Table")
     ax.plot([0, 0], [table_height, total_net_height], 'r-', linewidth=2, label="Net")
 
-    # Draw people
+    # Draw trajectories
     colors = plt.cm.tab10.colors
     for i, swing_angle in enumerate(angles):
         swing_angle_rad = swing_angle * np.pi / 180
@@ -196,8 +199,8 @@ def generate_all_plots():
     """Generates plots for all rubbers and impact heights."""
     results = []
     sample_rubbers = list(rubbers.keys())
-    sample_heights = [0.10, 0.20, 0.30]
-    sample_angles = [20, 30, 40, 50, 60, 70, 80]
+    sample_heights = [0.10, 0.20, 0.30, 0.4]
+    sample_angles = [30, 40, 50, 60]  # Intermediate swing angles
 
     for rubber_name in sample_rubbers:
         for height in sample_heights:
@@ -222,7 +225,8 @@ def generate_all_plots():
         f.write("</body></html>")
     with open('./results/all_trajectories.md', 'w') as f:
         for result in results:
-
             f.write('![alt text](' + result["filepath"] + ' "' + result['rubber'] + ' at height ' + str(result['height_cm']) + '")\n')
+
+
 
 generate_all_plots()
