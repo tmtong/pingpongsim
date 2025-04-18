@@ -1,13 +1,8 @@
 import numpy as np
 import matplotlib
-matplotlib.use('TkAgg')  # Switch to Tkinter backend [[5]]
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import os
-
-
-
-
-
 
 # Physical Constants
 g = 9.81       # Gravitational acceleration (m/s²)
@@ -16,7 +11,7 @@ r = 0.02       # Ball radius (m)
 rho = 1.225    # Air density (kg/m³)
 A = np.pi * r**2  # Cross-sectional area (m²)
 C_D = 0.47     # Drag coefficient
-C_L = 0.18     # Lift coefficient (adjusted down)
+C_L = 0.18     # Lift coefficient
 
 # Table Dimensions (ITTF standard)
 table_length = 2.74
@@ -27,12 +22,10 @@ total_net_height = table_height + net_height
 
 # Simulation Parameters
 x0 = -2.37            # Starting position (m)
-impact_heights = [0.15, 0.20, 0.25]  # Realistic impact heights (m)
-incoming_speed = 7.5  # m/s (27 km/h)
 incoming_angle = -4.0 * np.pi / 180  # Slight downward angle
+incoming_speed = 7.5  # m/s
 incoming_spin = 1800 * 2 * np.pi / 60  # 1800 rpm 
-racket_speed = 7.0    # m/s (25.2 km/h)
-
+racket_speed = 7.0    # m/s 
 
 rubbers = {
     "Hurricane 3 Neo": {"mu": 0.90, "e": 0.76, "kv_x": 0.65, "kv_z": 0.58, "kw": 0.85},
@@ -44,16 +37,12 @@ rubbers = {
     "Dignics 05": {"mu": 0.82, "e": 0.78, "kv_x": 0.68, "kv_z": 0.60, "kw": 0.78},
     "Dignics 80": {"mu": 0.80, "e": 0.77, "kv_x": 0.65, "kv_z": 0.58, "kw": 0.75},
     "Dignics 64": {"mu": 0.83, "e": 0.79, "kv_x": 0.69, "kv_z": 0.62, "kw": 0.80},    
-
 }
 
-# Improved bounce parameters for intermediate play
 e_table = 0.70        # Vertical Coefficient of Restitution
 mu_bounce = 0.80      # Horizontal friction coefficient
 spin_transfer = 0.55  # Spin retention after bounce
-I = (2 / 5) * m * r**2  # Moment of inertia for solid sphere
-
-
+I = (2 / 5) * m * r**2  # Moment of inertia
 
 def calculate_post_impact(rubber, impact_height, swing_angle):
     """Improved impact model with rotational energy consideration."""
@@ -190,6 +179,7 @@ def generate_plot(rubber_name, impact_height, angles):
     ax.legend(loc='upper right')
 
     # Save figure
+    os.makedirs('results', exist_ok=True)
     filename = f"trajectories_{rubber_name.replace(' ', '_')}_{int(impact_height*100)}cm.png"
     plt.savefig('results/' + filename, dpi=300, bbox_inches='tight')
     plt.close()
@@ -199,7 +189,7 @@ def generate_all_plots():
     """Generates plots for all rubbers and impact heights."""
     results = []
     sample_rubbers = list(rubbers.keys())
-    sample_heights = [0.10, 0.20, 0.30, 0.4]
+    sample_heights = [0.10, 0.20, 0.30, 0.40]
     sample_angles = [30, 40, 50, 60]  # Intermediate swing angles
 
     for rubber_name in sample_rubbers:
@@ -223,10 +213,76 @@ def generate_all_plots():
             f.write(f"<h2>{result['rubber']}, Height: {result['height_cm']}cm</h2>\n")
             f.write(f'<img src="{result["filepath"]}" alt="Trajectories">\n')
         f.write("</body></html>")
+
     with open('./results/all_trajectories.md', 'w') as f:
         for result in results:
             f.write('![alt text](' + result["filepath"] + ' "' + result['rubber'] + ' at height ' + str(result['height_cm']) + '")\n')
+    
+    return results
 
+def run_noisy_simulations(rubber_name, num_trials=500):
+    """Runs simulations with noise and calculates success rate."""
+    success_count = 0
+    
+    for _ in range(num_trials):
+        # Add noise to parameters
+        noisy_impact_height = max(0.001, np.random.uniform(0.1, 0.3))
+        noisy_swing_angle = np.radians(np.random.uniform(30, 60))
+        noisy_incoming_speed = max(1.0, np.random.normal(loc=incoming_speed, scale=2))
+        noisy_racket_speed = max(1.0, np.random.normal(loc=racket_speed, scale=2))
+        noisy_incoming_spin = np.random.normal(loc=incoming_spin, scale=100 * 2 * np.pi / 60)
+        
+        # Update incoming_angle based on noisy_incoming_speed and parameters
+        v_in_x = noisy_incoming_speed * np.cos(incoming_angle)
+        v_in_z = noisy_incoming_speed * np.sin(incoming_angle)
+        
+        v_racket_x = noisy_racket_speed * np.cos(noisy_swing_angle)
+        v_racket_z = noisy_racket_speed * np.sin(noisy_swing_angle)
+        
+        v_rel_tangential = (v_racket_x - v_in_x) + (noisy_incoming_spin * r)
+        v_rel_normal = v_racket_z - v_in_z
 
+        # Use original calculate_post_impact function with noisy parameters
+        rubber = rubbers[rubber_name]
+        mu, e_n = rubber["mu"], rubber["e"]
+        kv_x, kv_z, kw = rubber["kv_x"], rubber["kv_z"], rubber["kw"]
 
-generate_all_plots()
+        omega_out = (mu * noisy_incoming_spin + kw * v_rel_tangential / r + 0.1 * v_rel_normal / r)
+        v_out_x = e_n * v_in_x + kv_x * v_racket_x + 0.07 * omega_out * r
+        v_out_z = e_n * v_in_z + kv_z * v_racket_z
+
+        y0 = np.array([x0, table_height + noisy_impact_height, v_out_x, v_out_z])
+
+        # Simulate trajectory
+        trajectory = simulate_trajectory(y0, omega_out)
+        x_positions, z_positions = trajectory[0], trajectory[1]
+
+        # Check if ball landed on table
+        idx = np.where(z_positions <= table_height + 1e-3)[0]
+        if idx.size == 0:
+            continue
+
+        # Check if ball landed within table bounds
+        landing_x = x_positions[idx[-1]]
+        if not (-half_table <= landing_x <= half_table):
+            continue
+
+        # Check if ball cleared the net
+        if np.any(z_positions[x_positions >= -0.01] >= total_net_height):
+            success_count += 1
+
+    success_rate = success_count / num_trials
+    return success_rate
+
+if __name__ == "__main__":
+    # Generate plots
+    generate_all_plots()
+    
+    # Run noise simulations and print success rates
+    sample_rubbers = list(rubbers.keys())
+    
+    print("Success Rates:")
+    for rubber_name in sample_rubbers:
+        
+        success_rate = run_noisy_simulations(rubber_name)
+        print(f"{rubber_name},  Success Rate: {success_rate:.2%}")
